@@ -29,7 +29,7 @@ def fetch_data():
             matches.append(match_info)
 
         # Vérification de la récupération des données
-        print("🔹 Vérification après la boucle :")
+        print("🔹 Vérification finale avant création du DataFrame :")
         print(f"Nombre total d'éléments dans matches : {len(matches)}")
         print("🔹 Contenu de matches :", matches)
         
@@ -39,13 +39,13 @@ def fetch_data():
 
         # Création du DataFrame
         df = pd.DataFrame(matches)
-        print("🔹 Contenu du DataFrame avant l'enregistrement :")
-        print(df.to_string())  # Affichage complet
+        print("🔹 Aperçu du DataFrame avant l'enregistrement :")
+        print(df.head())  # Affichage des 5 premières lignes
 
         # Vérifier si le dossier data existe avant d'écrire
         os.makedirs("../data", exist_ok=True)
         df.to_csv(DATA_PATH, index=False)
-        print("✅ Données enregistrées dans matchs.csv !")
+        print(f"✅ Données enregistrées dans {DATA_PATH}")
     
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors de la récupération des données : {e}")
@@ -69,10 +69,7 @@ def handle_manual_entry():
         cont = input("Ajouter une autre ligue ? (o/n) : ")
         if cont.lower() != 'o':
             break
-print("🔹 Vérification finale avant création du DataFrame :")
-print(f"Nombre total d'éléments dans matches : {len(matches)}")
-print("🔹 Contenu de matches :", matches)
-
+    
     df = pd.DataFrame(matches)
     os.makedirs("../data", exist_ok=True)
     df.to_csv(DATA_PATH, index=False, mode='a', header=not os.path.exists(DATA_PATH))
