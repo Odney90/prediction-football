@@ -30,9 +30,8 @@ def fetch_data():
             matches.append(match_info)
 
         # Vérification de la récupération des données
-        print("🔹 Vérification après la boucle :")
-        print(f"Nombre total d'éléments dans matches : {len(matches)}")
-        print("🔹 Contenu de matches :", matches[:5])
+        print("🔹 Données extraites avant DataFrame :", matches)
+        print(f"🔹 Nombre d'éléments dans matches : {len(matches)}")
         
         if not matches:
             print("❌ Aucune donnée récupérée !")
