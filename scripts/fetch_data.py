@@ -14,16 +14,47 @@ def fetch_data():
         response.raise_for_status()
         data = response.json()
 
-        # ➜ Afficher toute la réponse de l'API
-        print("🔹 Réponse complète de l'API :")
-        print(data)
+        matches = []
+        for league in data['data']:
+            matches.append({
+                "league_id": league["id"],
+                "league_name": league["name"],
+                "country": league.get("country_name", "N/A"),  # Correction ici
+                "season": league.get("current_season_id", "N/A"),
+            })
 
-        # ➜ Afficher un exemple de ligue
-        if "data" in data and len(data["data"]) > 0:
-            print("🔹 Exemple de structure d'une ligue :")
-            print(data["data"][0])
+        df = pd.DataFrame(matches)
+        os.makedirs("../data", exist_ok=True)
+        df.to_csv(DATA_PATH, index=False)
+        print("✅ Données récupérées et enregistrées avec succès !")
     
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors de la récupération des données : {e}")
 
-fetch_data()
+def handle_manual_entry():
+    print("📝 Saisie manuelle des données...")
+    matches = []
+    while True:
+        league_id = input("ID de la ligue : ")
+        league_name = input("Nom de la ligue : ")
+        country = input("Pays : ")
+        season = input("Saison : ")
+
+        matches.append({
+            "league_id": league_id,
+            "league_name": league_name,
+            "country": country,
+            "season": season,
+        })
+        
+        cont = input("Ajouter une autre ligue ? (o/n) : ")
+        if cont.lower() != 'o':
+            break
+    
+    df = pd.DataFrame(matches)
+    os.makedirs("../data", exist_ok=True)
+    df.to_csv(DATA_PATH, index=False, mode='a', header=not os.path.exists(DATA_PATH))
+    print("✅ Données ajoutées manuellement et enregistrées !")
+
+if __name__ == "__main__":
+    fetch_data()
