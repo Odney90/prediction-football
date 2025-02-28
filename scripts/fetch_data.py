@@ -7,62 +7,41 @@ API_URL = "https://api.soccersapi.com/v2.2/leagues/?user=lundiodney&token=623654
 
 # Chemin du fichier de stockage
 DATA_PATH = "../data/matchs.csv"  # Remonte d'un niveau vers le dossier data
+
 def fetch_data():
     try:
         response = requests.get(API_URL)
         response.raise_for_status()
         data = response.json()
 
+        if "data" not in data or not isinstance(data["data"], list):
+            print("❌ Erreur: La réponse de l'API ne contient pas de données valides.")
+            return
+
         matches = []
         for league in data['data']:
-            matches.append({
-                "league_id": league["id"],
-                "league_name": league["name"],
+            match_info = {
+                "league_id": league.get("id", "N/A"),
+                "league_name": league.get("name", "N/A"),
                 "country": league.get("country_name", "N/A"),
                 "season": league.get("current_season_id", "N/A"),
-            })
+            }
+            matches.append(match_info)
 
-        # ✅ Vérification des données avant la création du DataFrame
-        print(f"🔹 Nombre d'éléments récupérés : {len(matches)}")
-        print("🔹 Aperçu des données avant DataFrame :", matches[:5])
-
-        # Création du DataFrame uniquement si `matches` n'est pas vide
+        # Vérification de la récupération des données
+        print(f"🔹 Nombre total de ligues récupérées : {len(matches)}")
         if matches:
-            df = pd.DataFrame(matches)
-            print("🔹 Contenu du DataFrame avant l'enregistrement :")
-            print(df.to_string())  # Affichage complet
-
-            os.makedirs("../data", exist_ok=True)
-            df.to_csv(DATA_PATH, index=False)
-            print("✅ Données enregistrées dans matchs.csv !")
+            print("🔹 Aperçu des données récupérées :", matches[:5])
         else:
-            print("❌ Aucune donnée à enregistrer !")
+            print("❌ Aucune donnée récupérée !")
+            return
 
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Erreur lors de la récupération des données : {e}")
-
-
-def fetch_data():
-    try:
-        response = requests.get(API_URL)
-        response.raise_for_status()
-        data = response.json()
-
-        matches = []
-        for league in data['data']:
-            matches.append({
-                "league_id": league["id"],
-                "league_name": league["name"],
-                "country": league.get("country_name", "N/A"),  # Correction ici
-                "season": league.get("current_season_id", "N/A"),
-            })
-
+        # Création du DataFrame
         df = pd.DataFrame(matches)
-        
-        # ✅ Ajoutons ce print pour vérifier le contenu du DataFrame
         print("🔹 Contenu du DataFrame avant l'enregistrement :")
-        print(df)
+        print(df.to_string())  # Affichage complet
 
+        # Vérifier si le dossier data existe avant d'écrire
         os.makedirs("../data", exist_ok=True)
         df.to_csv(DATA_PATH, index=False)
         print("✅ Données enregistrées dans matchs.csv !")
