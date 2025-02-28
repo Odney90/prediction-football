@@ -29,10 +29,11 @@ def fetch_data():
             matches.append(match_info)
 
         # Vérification de la récupération des données
-        print(f"🔹 Nombre total de ligues récupérées : {len(matches)}")
-        if matches:
-            print("🔹 Aperçu des données récupérées :", matches[:5])
-        else:
+        print("🔹 Vérification après la boucle :")
+        print(f"Nombre total d'éléments dans matches : {len(matches)}")
+        print("🔹 Contenu de matches :", matches)
+        
+        if not matches:
             print("❌ Aucune donnée récupérée !")
             return
 
