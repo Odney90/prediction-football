@@ -69,7 +69,10 @@ def handle_manual_entry():
         cont = input("Ajouter une autre ligue ? (o/n) : ")
         if cont.lower() != 'o':
             break
-    
+print("🔹 Vérification finale avant création du DataFrame :")
+print(f"Nombre total d'éléments dans matches : {len(matches)}")
+print("🔹 Contenu de matches :", matches)
+
     df = pd.DataFrame(matches)
     os.makedirs("../data", exist_ok=True)
     df.to_csv(DATA_PATH, index=False, mode='a', header=not os.path.exists(DATA_PATH))
