@@ -44,7 +44,7 @@ def fetch_data():
         os.makedirs(DATA_DIR, exist_ok=True)
 
         # Forcer l'écriture et l'affichage du fichier
-        df.to_csv(DATA_PATH, index=False)
+       df.to_csv(DATA_PATH, index=False, mode='w', encoding='utf-8', line_terminator='\n')
         print(f"✅ Données enregistrées dans {DATA_PATH}")
 
         # Vérification immédiate du fichier
