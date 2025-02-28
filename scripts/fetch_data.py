@@ -6,7 +6,8 @@ import os
 API_URL = "https://api.soccersapi.com/v2.2/leagues/?user=lundiodney&token=623654d91c81ceed9379be5968f089d8&t=list"
 
 # Chemin du fichier de stockage
-DATA_PATH = "../data/matchs.csv"  # Remonte d'un niveau vers le dossier data
+DATA_DIR = "../data"
+DATA_PATH = os.path.join(DATA_DIR, "matchs.csv")  # Chemin absolu
 
 def fetch_data():
     try:
@@ -28,11 +29,8 @@ def fetch_data():
             }
             matches.append(match_info)
 
-        # Vérification de la récupération des données
-        print("🔹 Vérification après la boucle :")
-        print(f"Nombre total d'éléments dans matches : {len(matches)}")
-        print("🔹 Contenu de matches :", matches[:5])
-        
+        # Vérification des données avant enregistrement
+        print(f"🔹 Nombre total d'éléments dans matches : {len(matches)}")
         if not matches:
             print("❌ Aucune donnée récupérée !")
             return
@@ -40,40 +38,23 @@ def fetch_data():
         # Création du DataFrame
         df = pd.DataFrame(matches)
         print("🔹 Aperçu du DataFrame avant l'enregistrement :")
-        print(df)
+        print(df.head())
 
-        # Vérifier si le dossier data existe avant d'écrire
-        os.makedirs("../data", exist_ok=True)
+        # Vérifier et créer le dossier data
+        os.makedirs(DATA_DIR, exist_ok=True)
+
+        # Forcer l'écriture et l'affichage du fichier
         df.to_csv(DATA_PATH, index=False)
         print(f"✅ Données enregistrées dans {DATA_PATH}")
-    
+
+        # Vérification immédiate du fichier
+        print("🔹 Vérification du contenu du fichier après écriture :")
+        with open(DATA_PATH, "r") as f:
+            content = f.read()
+            print(content)
+
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors de la récupération des données : {e}")
-
-def handle_manual_entry():
-    print("📝 Saisie manuelle des données...")
-    matches = []
-    while True:
-        league_id = input("ID de la ligue : ")
-        league_name = input("Nom de la ligue : ")
-        country = input("Pays : ")
-        season = input("Saison : ")
-
-        matches.append({
-            "league_id": league_id,
-            "league_name": league_name,
-            "country": country,
-            "season": season,
-        })
-        
-        cont = input("Ajouter une autre ligue ? (o/n) : ")
-        if cont.lower() != 'o':
-            break
-    
-    df = pd.DataFrame(matches)
-    os.makedirs("../data", exist_ok=True)
-    df.to_csv(DATA_PATH, index=False, mode='a', header=not os.path.exists(DATA_PATH))
-    print("✅ Données ajoutées manuellement et enregistrées !")
 
 if __name__ == "__main__":
     fetch_data()
