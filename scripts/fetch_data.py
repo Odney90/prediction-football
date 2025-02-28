@@ -2,11 +2,28 @@ import requests
 import pandas as pd
 import os
 
+
+
 # Définition des paramètres de l'API
 API_URL = "https://api.soccersapi.com/v2.2/leagues/?user=lundiodney&token=623654d91c81ceed9379be5968f089d8&t=list"
 
 # Chemin du fichier de stockage
 DATA_PATH = "../data/matchs.csv"  # Remonte d'un niveau vers le dossier data
+
+def fetch_data():
+    try:
+        response = requests.get(API_URL)
+        response.raise_for_status()
+        data = response.json()
+
+        # ➜ Afficher la structure exacte de la réponse API
+        print(data)
+
+        matches = []
+        for league in data['data']:
+            print(league)  # ➜ Vérifier chaque élément
+            break  # ➜ Afficher seulement le premier pour éviter un long affichage
+
 
 def fetch_data():
     try:
