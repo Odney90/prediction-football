@@ -29,9 +29,9 @@ def fetch_data():
             matches.append(match_info)
 
         # Vérification de la récupération des données
-        print("🔹 Vérification finale avant création du DataFrame :")
+        print("🔹 Vérification après la boucle :")
         print(f"Nombre total d'éléments dans matches : {len(matches)}")
-        print("🔹 Contenu de matches :", matches)
+        print("🔹 Contenu de matches :", matches[:5])
         
         if not matches:
             print("❌ Aucune donnée récupérée !")
@@ -40,7 +40,7 @@ def fetch_data():
         # Création du DataFrame
         df = pd.DataFrame(matches)
         print("🔹 Aperçu du DataFrame avant l'enregistrement :")
-        print(df.head())  # Affichage des 5 premières lignes
+        print(df)
 
         # Vérifier si le dossier data existe avant d'écrire
         os.makedirs("../data", exist_ok=True)
