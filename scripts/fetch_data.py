@@ -7,6 +7,40 @@ API_URL = "https://api.soccersapi.com/v2.2/leagues/?user=lundiodney&token=623654
 
 # Chemin du fichier de stockage
 DATA_PATH = "../data/matchs.csv"  # Remonte d'un niveau vers le dossier data
+def fetch_data():
+    try:
+        response = requests.get(API_URL)
+        response.raise_for_status()
+        data = response.json()
+
+        matches = []
+        for league in data['data']:
+            matches.append({
+                "league_id": league["id"],
+                "league_name": league["name"],
+                "country": league.get("country_name", "N/A"),
+                "season": league.get("current_season_id", "N/A"),
+            })
+
+        # ✅ Vérification des données avant la création du DataFrame
+        print(f"🔹 Nombre d'éléments récupérés : {len(matches)}")
+        print("🔹 Aperçu des données avant DataFrame :", matches[:5])
+
+        # Création du DataFrame uniquement si `matches` n'est pas vide
+        if matches:
+            df = pd.DataFrame(matches)
+            print("🔹 Contenu du DataFrame avant l'enregistrement :")
+            print(df.to_string())  # Affichage complet
+
+            os.makedirs("../data", exist_ok=True)
+            df.to_csv(DATA_PATH, index=False)
+            print("✅ Données enregistrées dans matchs.csv !")
+        else:
+            print("❌ Aucune donnée à enregistrer !")
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erreur lors de la récupération des données : {e}")
+
 
 def fetch_data():
     try:
