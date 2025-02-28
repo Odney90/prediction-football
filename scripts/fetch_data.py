@@ -29,32 +29,69 @@ def fetch_data():
             }
             matches.append(match_info)
 
-        # Vérification des données avant enregistrement
-        print(f"🔹 Nombre total d'éléments dans matches : {len(matches)}")
+        # Vérification de la récupération des données
+        print("🔹 Vérification après la boucle :")
+        print(f"Nombre total d'éléments dans matches : {len(matches)}")
+        print("🔹 Contenu de matches :", matches[:5])
+        
         if not matches:
             print("❌ Aucune donnée récupérée !")
             return
 
         # Création du DataFrame
         df = pd.DataFrame(matches)
-        print("🔹 Aperçu du DataFrame avant l'enregistrement :")
-        print(df.head())
+        print("🔹 Vérification finale du DataFrame avant enregistrement :")
+        print(df)
+        print(f"Nombre de lignes dans df : {len(df)}")
 
         # Vérifier et créer le dossier data
         os.makedirs(DATA_DIR, exist_ok=True)
-
-        # Forcer l'écriture et l'affichage du fichier
-       df.to_csv(DATA_PATH, index=False, mode='w', encoding='utf-8', line_terminator='\n')
+        
+        # Forcer l'écriture et éviter les problèmes de cache
+        with open(DATA_PATH, "w", encoding="utf-8") as f:
+            df.to_csv(f, index=False)
+            f.flush()
+            os.fsync(f.fileno())
+        
         print(f"✅ Données enregistrées dans {DATA_PATH}")
 
-        # Vérification immédiate du fichier
-        print("🔹 Vérification du contenu du fichier après écriture :")
-        with open(DATA_PATH, "r") as f:
-            content = f.read()
-            print(content)
-
+        # Vérification immédiate après écriture
+        if os.path.exists(DATA_PATH):
+            print(f"✅ Le fichier {DATA_PATH} a bien été créé.")
+            with open(DATA_PATH, "r") as f:
+                content = f.read()
+                print("🔹 Contenu de matchs.csv après écriture :")
+                print(content)
+        else:
+            print(f"❌ Erreur : {DATA_PATH} n'a pas été créé !")
+    
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors de la récupération des données : {e}")
+
+def handle_manual_entry():
+    print("📝 Saisie manuelle des données...")
+    matches = []
+    while True:
+        league_id = input("ID de la ligue : ")
+        league_name = input("Nom de la ligue : ")
+        country = input("Pays : ")
+        season = input("Saison : ")
+
+        matches.append({
+            "league_id": league_id,
+            "league_name": league_name,
+            "country": country,
+            "season": season,
+        })
+        
+        cont = input("Ajouter une autre ligue ? (o/n) : ")
+        if cont.lower() != 'o':
+            break
+    
+    df = pd.DataFrame(matches)
+    os.makedirs(DATA_DIR, exist_ok=True)
+    df.to_csv(DATA_PATH, index=False, mode='a', header=not os.path.exists(DATA_PATH))
+    print("✅ Données ajoutées manuellement et enregistrées !")
 
 if __name__ == "__main__":
     fetch_data()
