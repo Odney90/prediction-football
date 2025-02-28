@@ -24,9 +24,14 @@ def fetch_data():
             })
 
         df = pd.DataFrame(matches)
+        
+        # ✅ Ajoutons ce print pour vérifier le contenu du DataFrame
+        print("🔹 Contenu du DataFrame avant l'enregistrement :")
+        print(df)
+
         os.makedirs("../data", exist_ok=True)
         df.to_csv(DATA_PATH, index=False)
-        print("✅ Données récupérées et enregistrées avec succès !")
+        print("✅ Données enregistrées dans matchs.csv !")
     
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors de la récupération des données : {e}")
